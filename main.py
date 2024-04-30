@@ -24,7 +24,9 @@ while True:
     #pygame.draw.ellipse(screen, (200,200,200), (1280/2.1,720/3,x*1.5,y*1.5), 2)
     
     
-    
+
     
     
     pygame.display.update()
+
+print("a")
