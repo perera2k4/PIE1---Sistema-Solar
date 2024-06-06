@@ -45,6 +45,34 @@ class Planeta:
         posicao_planetas = self.posicao_planetas(posicao_sol)
         screen.blit(self.image, (posicao_planetas[0] - self.raio_planeta, posicao_planetas[1] - self.raio_planeta))
 
+informacoes_planetas = [
+    Planeta("Mercurio", "planetas/mercurio.png", 8, 80, 1.607),
+    Planeta("Venus", "planetas/venus.png", 12, 120, 1.174),
+    Planeta("Terra", "planetas/terra.png", 14, 160, 1.0),
+    Planeta("Marte", "planetas/marte.png", 10, 200, 0.802),
+    Planeta("Jupiter", "planetas/jupiter.png", 25, 280, 0.434),
+    Planeta("Saturno", "planetas/saturno.png", 22, 360, 0.323),
+    Planeta("Urano", "planetas/urano.png", 18, 440, 0.228),
+    Planeta("Netuno", "planetas/netuno.png", 16, 520, 0.182)
+]
+
+# Função para mostrar a imagem grande
+def show_large_image(informacoes_planetas):
+    large_image = pygame.image.load(informacoes_planetas)
+    large_image_rect = large_image.get_rect(center=(200, 150))
+
+    running = True
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                running = False
+
+        screen.fill(fundo)
+        screen.blit(large_image, large_image_rect)
+        pygame.display.flip()
+
 # Desenhar as órbitas dos planetas
 def desenhar_orbitas(planeta, posicao_sol):                                                 # A função se resume a pegar um angulo de -1º e adicionar no array pontos_orbita
     pontos_orbita = []                                                                      # os valores para plotar no pygame.
@@ -84,6 +112,13 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                # Verifica se o clique foi em um dos planetas
+                for planeta in planetas:
+                    if planeta.posicao_planetas(posicao_sol)[0] - planeta.raio_planeta <= event.pos[0] <= planeta.posicao_planetas(posicao_sol)[0] + planeta.raio_planeta and \
+                       planeta.posicao_planetas(posicao_sol)[1] - planeta.raio_planeta <= event.pos[1] <= planeta.posicao_planetas(posicao_sol)[1] + planeta.raio_planeta:
+                        show_large_image(planeta.plotar_imagens(screen, posicao_sol))
+
             manager.process_events(event)
 
         screen.fill(fundo)
