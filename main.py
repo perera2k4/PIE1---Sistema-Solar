@@ -3,26 +3,82 @@ import pygame_gui
 import sys
 import math
 
-
 pygame.init()
 
 # Definições de cores
-fundo = (0, 0, 0)
-linha_branca = (255, 255, 255)
+preto = (0, 0, 0)
+branco = (255, 255, 255)
+cinza_claro = (80, 80, 80)
+cinza_escuro = (200, 200, 200)
 
 # Configurações da tela
-altura_tela, largura_tela = 1280, 720                           # Altura e largura do display no monitor
-screen = pygame.display.set_mode((altura_tela, largura_tela))   # Seta o os valores de altura e largura com base nas informações acima
-pygame.display.set_icon(pygame.image.load("planetas/sol.png"))  # Icone do usuário
-pygame.display.set_caption("Sistema Solar")                     # Seta o nome da aplicação
-fps_visor = pygame.time.Clock()                                 # Seta a velocidade dos planetas com base no FPS da aplicação
+info_Tela = pygame.display.Info()
+altura_tela, largura_tela = info_Tela.current_w, info_Tela.current_h    # Altura e largura do display no monitor
+screen = pygame.display.set_mode((altura_tela, largura_tela))           # Seta o os valores de altura e largura com base nas informações acima
+pygame.display.set_icon(pygame.image.load("planetas/sol.png"))          # Icone do usuário
+pygame.display.set_caption("Sistema Solar")                             # Seta o nome da aplicação
+fps_visor = pygame.time.Clock()                                         # Seta a velocidade dos planetas com base no FPS da aplicação
+
+# Definindo a fonte
+fonte = pygame.font.SysFont(None, 30)
+
+# Lista do Sol e dos planetas
+sistema_solar = ["Sol", "Mercúrio", "Vênus", "Terra", "Marte", "Júpiter", "Saturno", "Urano", "Netuno"]
+
+# Dicionário de caminhos para as imagens dos planetas
+lista_planetas = {
+    "Sol": "planetas/sol.png",
+    "Mercúrio": "planetas/mercurio.png",
+    "Vênus": "planetas/venus.png",
+    "Terra": "planetas/terra.png",
+    "Marte": "planetas/marte.png",
+    "Júpiter": "planetas/jupiter.png",
+    "Saturno": "planetas/saturno.png",
+    "Urano": "planetas/urano.png",
+    "Netuno": "planetas/netuno.png"
+}
+
+# Carregar imagens dos planetas
+carregar_imagens = {}
+for planet, image_path in lista_planetas.items():
+    image = pygame.image.load(image_path)
+    image = pygame.transform.scale(image, (50, 50))  # Redimensionar a imagem para 50x50 pixels
+    carregar_imagens[planet] = image
+
+def plotar_texto(text, fonte, color, surface, x, y):
+    textobj = fonte.render(text, True, color)
+    textrect = textobj.get_rect(center=(x, y))
+    surface.blit(textobj, textrect)
+
+def plotar_quadrado(surface, color, rect, canto_arredondado):
+    pygame.draw.rect(surface, color, rect, border_radius=canto_arredondado)
+
+# Função para criar botões
+def criar_botao(surface, text, x, y, w, h, inactive_color, active_color, canto_arredondado):
+    mouse = pygame.mouse.get_pos()
+    clique = pygame.mouse.get_pressed()
+
+    if x + w > mouse[0] > x and y + h > mouse[1] > y:
+        plotar_quadrado(surface, active_color, (x, y, w, h), canto_arredondado)
+        
+        if clique[0] == 1:
+            print(f"O usuário clicou em: {text}!")
+    else:
+        plotar_quadrado(surface, inactive_color, (x, y, w, h), canto_arredondado)
+
+    imagem = carregar_imagens.get(text)
+    if imagem:
+        surface.blit(imagem, (x + 10, y + (h - imagem.get_height()) // 2))
+        plotar_texto(text, fonte, branco, surface, x + w // 2 + 30, y + h // 2)
+    else:
+        plotar_texto(text, fonte, preto, surface, x + w // 2, y + h // 2)
 
 class Planeta:
     #Código orientado a objetos para setar informações para printar o planeta
     def __init__(self, name, diretorio_imagem, raio_planeta, distancia_planetas, velocidade_planeta):
         self.name = name
-        self.image = pygame.image.load(diretorio_imagem)
-        self.image = pygame.transform.scale(self.image, (2 * raio_planeta, 2 * raio_planeta)) 
+        self.imagem = pygame.image.load(diretorio_imagem)
+        self.imagem = pygame.transform.scale(self.imagem, (2 * raio_planeta, 2 * raio_planeta)) 
         self.raio_planeta = raio_planeta
         self.distancia_planetas = distancia_planetas
         self.angulo = 0
@@ -43,7 +99,7 @@ class Planeta:
     # Desenha a imagem do planeta
     def plotar_imagens(self, screen, posicao_sol):
         posicao_planetas = self.posicao_planetas(posicao_sol)
-        screen.blit(self.image, (posicao_planetas[0] - self.raio_planeta, posicao_planetas[1] - self.raio_planeta))
+        screen.blit(self.imagem, (posicao_planetas[0] - self.raio_planeta, posicao_planetas[1] - self.raio_planeta))
 
 # Desenhar as órbitas dos planetas
 def desenhar_orbitas(planeta, posicao_sol):                                                 # A função se resume a pegar um angulo de -1º e adicionar no array pontos_orbita
@@ -52,7 +108,7 @@ def desenhar_orbitas(planeta, posicao_sol):                                     
         x = posicao_sol[0] + planeta.distancia_planetas * math.cos(math.radians(angulo))
         y = posicao_sol[1] + planeta.distancia_planetas * math.sin(math.radians(angulo))
         pontos_orbita.append((int(x), int(y)))
-    pygame.draw.lines(screen, linha_branca, False, pontos_orbita, 1)
+    pygame.draw.lines(screen, branco, False, pontos_orbita, 1)
 
 # Função principal
 def main():
@@ -86,7 +142,18 @@ def main():
                 running = False
             manager.process_events(event)
 
-        screen.fill(fundo)
+        screen.fill(preto)
+    
+        # Exibir botões para o Sol e os planetas
+        button_width = int(altura_tela * 0.125)
+        button_height = int(largura_tela * 0.05)
+        margin = int(largura_tela * 0.02)
+        canto_arredondado = 10
+
+        for index, body in enumerate(sistema_solar):
+            y_position = 100 + index * (button_height + margin)
+            criar_botao(screen, body, 20, y_position, button_width, button_height, cinza_claro, cinza_escuro, canto_arredondado)
+    
 
         # Desenha a imagem do sol
         screen.blit(imagem_sol, (posicao_sol[0] - circunferencia_sol, posicao_sol[1] - circunferencia_sol))
