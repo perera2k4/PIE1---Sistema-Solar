@@ -45,33 +45,33 @@ for planet, image_path in lista_planetas.items():
     image = pygame.transform.scale(image, (50, 50))  # Redimensionar a imagem para 50x50 pixels
     carregar_imagens[planet] = image
 
-def plotar_texto(text, fonte, color, surface, x, y):
+def plotar_texto(text, fonte, color, tela, x, y):
     textobj = fonte.render(text, True, color)
     textrect = textobj.get_rect(center=(x, y))
-    surface.blit(textobj, textrect)
+    tela.blit(textobj, textrect)
 
-def plotar_quadrado(surface, color, rect, canto_arredondado):
-    pygame.draw.rect(surface, color, rect, border_radius=canto_arredondado)
+def plotar_quadrado(tela, color, rect, canto_arredondado):
+    pygame.draw.rect(tela, color, rect, border_radius=canto_arredondado)
 
 # Função para criar botões
-def criar_botao(surface, text, x, y, w, h, inactive_color, active_color, canto_arredondado):
+def criar_botao(tela, text, x, y, w, h, cor_inativa, cor_ativa, canto_arredondado):
     mouse = pygame.mouse.get_pos()
     clique = pygame.mouse.get_pressed()
 
     if x + w > mouse[0] > x and y + h > mouse[1] > y:
-        plotar_quadrado(surface, active_color, (x, y, w, h), canto_arredondado)
+        plotar_quadrado(tela, cor_ativa, (x, y, w, h), canto_arredondado)
         
         if clique[0] == 1:
-            print(f"O usuário clicou em: {text}!")
+            print(f"O usuário clicou em: {text}")
     else:
-        plotar_quadrado(surface, inactive_color, (x, y, w, h), canto_arredondado)
+        plotar_quadrado(tela, cor_inativa, (x, y, w, h), canto_arredondado)
 
     imagem = carregar_imagens.get(text)
     if imagem:
-        surface.blit(imagem, (x + 10, y + (h - imagem.get_height()) // 2))
-        plotar_texto(text, fonte, branco, surface, x + w // 2 + 30, y + h // 2)
+        tela.blit(imagem, (x + 10, y + (h - imagem.get_height()) // 2))
+        plotar_texto(text, fonte, branco, tela, x + w // 2 + 30, y + h // 2)
     else:
-        plotar_texto(text, fonte, preto, surface, x + w // 2, y + h // 2)
+        plotar_texto(text, fonte, preto, tela, x + w // 2, y + h // 2)
 
 class Planeta:
     #Código orientado a objetos para setar informações para printar o planeta
