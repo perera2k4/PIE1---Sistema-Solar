@@ -10,6 +10,8 @@ preto = (0, 0, 0)
 branco = (255, 255, 255)
 cinza_claro = (80, 80, 80)
 cinza_escuro = (200, 200, 200)
+vermelho = (255, 0, 0)
+vermelho_escuro = (200, 0, 0)
 
 # Configurações da tela
 info_Tela = pygame.display.Info()
@@ -134,6 +136,18 @@ def main():
     manager = pygame_gui.UIManager((altura_tela, largura_tela))
     alterar_fps = pygame_gui.elements.UIHorizontalSlider(relative_rect=pygame.Rect((1050, 20), (200, 20)), start_value=30, value_range=(15, 240), manager=manager)
 
+    # Função para desenhar um retângulo com cantos arvermelhoondados
+    def desenhar_quadrado_botao_sair(surface, rect, color, corner_radius):
+        pygame.draw.rect(surface, color, rect, border_radius=corner_radius)
+
+    # Função para desenhar o botão
+    def desenhar_botao_sair(screen, x, y, width, height, bg_color, text, text_color):
+        desenhar_quadrado_botao_sair(screen, (x, y, width, height), bg_color, 10)
+        font = pygame.font.Font(None, 36)
+        text_surface = font.render(text, True, text_color)
+        text_rect = text_surface.get_rect(center=(x + width // 2, y + height // 2))
+        screen.blit(text_surface, text_rect)
+
     # Função principal do pygame
     running = True
     while running:
@@ -170,6 +184,27 @@ def main():
         # Atualiza a velocidade
         manager.update(fps_visor.tick_busy_loop(int(alterar_fps.get_current_value())) / 1000.0)
         manager.draw_ui(screen)
+
+        mouse_x, mouse_y = pygame.mouse.get_pos()
+        mouse_hover = 10 <= mouse_x <= 10 + 50 and 10 <= mouse_y <= 10 + 30
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+
+            # Verificando se o botão foi clicado
+            if event.type == pygame.MOUSEBUTTONDOWN and mouse_hover:
+                running = False
+
+        # Desenhando o botão com cores invertidas se o mouse estiver sobre ele
+        if mouse_hover:
+            button_color = branco
+            text_color = vermelho
+        else:
+            button_color = vermelho
+            text_color = branco
+
+        desenhar_botao_sair(screen, 10, 10, 50, 30, button_color, 'x', text_color)
 
         pygame.display.flip()
 
