@@ -134,7 +134,7 @@ def main():
 
     # Barra da mudança de velocidade
     manager = pygame_gui.UIManager((altura_tela, largura_tela))
-    alterar_fps = pygame_gui.elements.UIHorizontalSlider(relative_rect=pygame.Rect((1050, 20), (200, 20)), start_value=30, value_range=(15, 240), manager=manager)
+    alterar_fps = pygame_gui.elements.UIHorizontalSlider(relative_rect=pygame.Rect((altura_tela-300, 20), (200, 20)), start_value=30, value_range=(15, 240), manager=manager)
 
     # Função para desenhar um retângulo com cantos arvermelhoondados
     def desenhar_quadrado_botao_sair(surface, rect, color, corner_radius):
@@ -186,7 +186,7 @@ def main():
         manager.draw_ui(screen)
 
         mouse_x, mouse_y = pygame.mouse.get_pos()
-        mouse_hover = 10 <= mouse_x <= 10 + 50 and 10 <= mouse_y <= 10 + 30
+        mouse_hover = altura_tela-75 <= mouse_x <= altura_tela-75 + 50 and 10 <= mouse_y <= 10 + 30
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -204,7 +204,7 @@ def main():
             button_color = vermelho
             text_color = branco
 
-        desenhar_botao_sair(screen, 10, 10, 50, 30, button_color, 'x', text_color)
+        desenhar_botao_sair(screen, altura_tela-75, 10, 50, 30, button_color, 'x', text_color)
 
         pygame.display.flip()
 
